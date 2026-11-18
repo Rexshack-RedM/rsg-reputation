@@ -200,3 +200,124 @@ Created automatically (`Config.AutoDatabase`), or import `install.sql`.
 
 ---
 Support the Project : https://rexshack.tebex.store/
+
+<!-- BEGIN AUTO-REFERENCE (generated from the code; re-run the generator instead of editing by hand) -->
+
+## Technical reference
+
+Generated from the source of **rsg-reputation 3.0.0**. Names, arguments and defaults below are read straight from the code.
+
+### Dependencies
+
+`oxmysql`, `rsg-core`
+
+### Database
+
+Tables: `rsg_reputation`, `rsg_reputation_standing`.
+
+Tables are created automatically on start while `Config.AutoDatabase = true` (default). Nothing is ever dropped or overwritten.
+For a manual install set `Config.AutoDatabase = false` and import `install.sql` once.
+
+```lua
+-- shared/config.lua
+Config.AutoDatabase = true -- false = import the SQL file yourself
+```
+
+### Configuration
+
+| Option | Default | Notes |
+|---|---|---|
+| `Config.AutoDatabase` | `true` | Tables are created automatically on start. Set to false to import install.sql manually. |
+| `Config.AllowPushToTalkWhileOpen` | `true` | While the NUI is open, block game controls but allow push-to-talk. |
+| `Config.PushToTalkControls` | `table` |  |
+| `Config.Command` | `'reputation'` | Chat command that opens the reputation panel ('' to disable) |
+| `Config.AdminPermission` | `'admin'` | Permission level needed for the admin commands |
+| `Config.NotifyChanges` | `true` | Small "+5 Honor" / "-8 Valentine standing" notifications on every change (a new one replaces the old one) |
+| `Config.NotifyTierChange` | `true` | Notification when a player moves into a new honor or standing tier |
+| `Config.SaveInterval` | `60` | Seconds between database saves of changed reputations (also saved on logout) |
+| `Config.MaxChangePerCall` | `200` | Safety cap on the size of a single change made through AddHonor / AddStanding |
+| `Config.Honor` | `table` |  |
+| `Config.Min` | `-1000` |  |
+| `Config.Max` | `1000` |  |
+| `Config.Start` | `0` |  |
+| `Config.Decay` | `{ Enabled = false, PerDay = 5 }` | pulls the score back toward 0 by PerDay for every full day (works while the player is offline too) |
+| `Config.Tiers` | `table` |  |
+| `Config.Standing` | `table` |  |
+| `Config.ParentSpill` | `0.5` | a change in a town also moves its state by this fraction (0 = never), rounded toward zero |
+| `Config.Regions` | `table` |  |
+| `Config.Actions` | `table` |  |
+
+### Exports
+
+**Server**
+
+| Export | Arguments | File |
+|---|---|---|
+| `AddHonor` | `` | `server/reputation.lua` |
+| `SetHonor` | `` | `server/reputation.lua` |
+| `GetHonor` | `` | `server/reputation.lua` |
+| `GetHonorTier` | `` | `server/reputation.lua` |
+| `HasHonor` | `src, min` | `server/reputation.lua` |
+| `AddStanding` | `` | `server/reputation.lua` |
+| `SetStanding` | `` | `server/reputation.lua` |
+| `GetStanding` | `` | `server/reputation.lua` |
+| `GetStandingTier` | `` | `server/reputation.lua` |
+| `HasStanding` | `src, region, min` | `server/reputation.lua` |
+| `GetPriceModifier` | `` | `server/reputation.lua` |
+| `IsHostile` | `` | `server/reputation.lua` |
+| `ApplyAction` | `` | `server/reputation.lua` |
+| `ResetReputation` | `` | `server/reputation.lua` |
+| `GetHonorByCitizenId` | `` | `server/reputation.lua` |
+| `GetRegions` | `` | `server/reputation.lua` |
+
+**Client**
+
+| Export | Arguments | File |
+|---|---|---|
+| `GetHonor` | `` | `client/client.lua` |
+| `GetHonorTier` | `` | `client/client.lua` |
+| `GetStanding` | `region` | `client/client.lua` |
+| `GetStandingTier` | `region` | `client/client.lua` |
+| `GetPriceModifier` | `region` | `client/client.lua` |
+| `IsHostile` | `region` | `client/client.lua` |
+
+```lua
+-- example
+local result = exports['rsg-reputation']:AddHonor()
+```
+
+### Callbacks
+
+| Callback | Side | Arguments | File |
+|---|---|---|---|
+| `rsg-reputation:server:getReputation` | server | `source, cb` | `server/reputation.lua` |
+| `rsg-reputation:server:requestSync` | server | `source, cb` | `server/reputation.lua` |
+
+```lua
+-- client side
+RSGCore.Functions.TriggerCallback('rsg-reputation:server:getReputation', function(result)
+    -- use result
+end)
+```
+
+### Events
+
+Server events can be fired by any client, so every handler re-validates the player, the arguments and any permission, distance or cooldown on the server. Never add a reward to a handler without those checks.
+
+| Event | Side | Arguments | File |
+|---|---|---|---|
+| `rsg-reputation:client:sync` | client | `data` | `client/client.lua` |
+| `RSGCore:Client:OnPlayerLoaded` | client | `` | `client/client.lua` |
+| `RSGCore:Client:OnPlayerUnload` | client | `` | `client/client.lua` |
+| `rsg-reputation:client:open` | client | `` | `client/ui.lua` |
+
+```lua
+-- from a server script
+TriggerClientEvent('rsg-reputation:client:sync', source, data)
+```
+
+### Locales
+
+Language files in `locales/`: `de`, `el`, `en`, `es`, `fr`, `ja`, `nl`, `pl`, `pt-br`, `ro`. Set the language with `setr rsg:locale "en"`.
+
+<!-- END AUTO-REFERENCE -->
