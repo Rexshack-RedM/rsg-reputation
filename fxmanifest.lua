@@ -23,6 +23,7 @@ server_scripts {
     'server/database.lua',
     'server/reputation.lua',
     'server/commands.lua',
+    'server/versionchecker.lua',
 }
 
 ui_page 'html/index.html'
